@@ -1,0 +1,231 @@
+{% extends 'admin/admin.html' %}
+{% block content %}
+    <section class="content-header">
+        <h1>萤火虫：发现线索微光</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> 相似度计算</a></li>
+            <li class="active">对比文件列表</li>
+        </ol>
+    </section>
+    <section class="content" id="showcontent">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h3 class="box-title">源文件管理</h3>
+                        <div class="box-tools">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="table_search" class="form-control pull-right"
+                                       placeholder="请输入关键字...">
+
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive no-padding">
+                        {% for msg in get_flashed_messages(category_filter=['fail']) %}
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-check"></i> 计算失败</h4>
+                                计算失败
+                            </div>
+                        {% endfor %}
+                        {% for msg in get_flashed_messages(category_filter=['ok']) %}
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-check"></i> 计算成功</h4>
+                                计算成功
+                            </div>
+                        {% endfor %}
+                        {% for msg in get_flashed_messages(category_filter=['save']) %}
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-check"></i> 修改成功</h4>
+                                修改成功
+                            </div>
+                        {% endfor %}
+                        <table class="table table-hover">
+                            <tbody>
+                            <tr>
+                                <th>编号</th>
+                                <th>语句</th>
+                                <th>阈值（%）</th>
+                                <th>权重</th>
+                                <th style="min-width:120px">操作事项</th>
+                            </tr>
+                            {% block iframe %}
+                            {% endblock %}
+                            {% for v in sentences %}
+
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td style="max-width: 1150px; text-align:left">{{ v['text'] }}</td>
+                                    <td>{{ v["threshold"] }}</td>
+                                    <td>{{ v["weight"] }}</td>
+                                    <td>
+                                        <a id="edit" onclick="tranf({{ v["objId"] }})"
+                                           class="label label-success">编辑</a>
+                                        <a id="delete" class="label label-danger">删除</a>
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <section class="content" id="showcontent">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h3 class="box-title">对比文件列表</h3>
+                        <div class="box-tools">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="table_search" class="form-control pull-right"
+                                       placeholder="请输入关键字...">
+
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive no-padding">
+                        {% for msg in get_flashed_messages(category_filter=['fail']) %}
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-check"></i> 计算失败</h4>
+                                计算失败
+                            </div>
+                        {% endfor %}
+                        {% for msg in get_flashed_messages(category_filter=['ok']) %}
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-check"></i> 计算成功</h4>
+                                计算成功
+                            </div>
+                        {% endfor %}
+                        <table class="table table-hover">
+                            <tbody>
+                            <tr>
+                                <th>标题</th>
+                                <th>城市名称</th>
+                                <th>发文机构</th>
+                                <th>发布日期</th>
+                                <th>原文链接</th>
+                            </tr>
+                            {% for v in index_list %}
+                                <tr>
+                                    <td>{{ v[2] }}</td>
+                                    <td>{{ v[3] }}</td>
+                                    <td>{{ v[4] }}</td>
+                                    <td>{{ v[5] }}</td>
+                                    <td><a href="{{ v[6] }}" target="_blank">原文链接</a></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <nav aria-label="Page navigation" class="pull-right">
+                        <ul class="pagination">
+                            {{ html|safe }}
+                        </ul>
+                    </nav>
+                </div>
+
+
+            </div>
+            <div class="box-footer">
+                <a class="btn btn-primary" id="" name="submit" type="" value="返回"
+                   href="{{ url_for("admin.bot_search") }}">返回</a>
+                <a id="trans" class="btn btn-primary">开始计算</a>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}
+
+{% block js %}
+    <script src="{{ url_for('static',filename='js/echarts.min.js') }}"></script>
+    <script>
+        var myChart = echarts.init(document.getElementById('meminfo'));
+        option = {
+            backgroundColor: "white",
+            tooltip: {
+                formatter: "{a} <br/>{b} : {c}%"
+            },
+            toolbox: {
+                feature: {
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            series: [{
+                name: '内存使用率',
+                type: 'gauge',
+                detail: {
+                    formatter: '{value}%'
+                },
+                data: [{
+                    value: 50,
+                    name: '内存使用率'
+                }]
+            }]
+        };
+        setInterval(function () {
+            option.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+            myChart.setOption(option, true);
+        }, 2000);
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#g-6').addClass('active')
+            $('#g-6-1').addClass('active')
+        });
+        $("#trans").click(function () {
+            var sourefileNo ={{ sqlwhereOne[0]|tojson }};
+            var fileNo = {{ sqlwhereOne[1]|tojson }};
+            var fileTitle = {{ sqlwhereOne[2]|tojson }};
+            var fileCityName = {{ sqlwhereOne[3]|tojson }};
+            var fileReleasetime1 = {{ sqlwhereOne[4]|tojson }};
+            var fileReleasetime2 = {{ sqlwhereOne[5]|tojson }};
+            location.href = "{{url_for('admin.bot_cal')}}?sourefileNo=" + sourefileNo
+                + "&fileNo=" + fileNo
+                + "&fileTitle=" + fileTitle
+                + "&fileCityName=" + fileCityName
+                + "&fileReleasetime1=" + fileReleasetime1
+                + "&fileReleasetime2=" + fileReleasetime2
+        });
+    </script>
+    <script type="text/javascript">
+
+        function tranf(data) {
+            var sentenceId = data
+            var sourefileNo ={{ sqlwhereOne[0]|tojson }};
+            var fileNo = {{ sqlwhereOne[1]|tojson }};
+            var fileTitle = {{ sqlwhereOne[2]|tojson }};
+            var fileCityName = {{ sqlwhereOne[3]|tojson }};
+            var fileReleasetime1 = {{ sqlwhereOne[4]|tojson }};
+            var fileReleasetime2 = {{ sqlwhereOne[5]|tojson }};
+            location.href = "{{url_for('admin.bot_alert')}}?sourefileNo=" + sourefileNo
+                + "&fileNo=" + fileNo
+                + "&fileTitle=" + fileTitle
+                + "&fileCityName=" + fileCityName
+                + "&fileReleasetime1=" + fileReleasetime1
+                + "&fileReleasetime2=" + fileReleasetime2
+                + "&sentenceId=" + sentenceId
+        }
+    </script>
+    {% block cjs %}
+    {% endblock %}
+{% endblock %}

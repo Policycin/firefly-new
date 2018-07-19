@@ -1,0 +1,14 @@
+/** Home Page **/
+body {
+    padding-top: 52px;
+    padding-bottom: 40px;
+    background-color: #adadad !important;
+}
+
+@media (max-width: 979px) {
+    .navbar .collapse .pull-right {
+        float: none;
+        margin-left: 0;
+    }
+}
+

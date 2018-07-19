@@ -1,0 +1,23 @@
+{% extends 'admin/bot_list.html' %}
+{% block iframe %}
+    <form role="form" method="POST" enctype="multipart/form-data" action="">
+        <tr>
+            {% for err in form.errors %}
+                {{ err }}
+            {% endfor %}
+            <td>{{ objId }}</td>
+            <td style="max-width: 1150px; text-align:left">{{ form.sentence }}</td>
+            <td>{{ form.threshold }}</td>
+            <td>{{ form.weight }}</td>
+            <td>
+                <div class="box-footer">
+                    {{ form.csrf_token }}
+                    {{ form.submit }}
+                </div>
+            </td>
+        </tr>
+    </form>
+{% endblock %}
+{% block cjs %}
+
+{% endblock %}

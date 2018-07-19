@@ -1,0 +1,233 @@
+body {
+    background-color: #ffffff !important;
+}
+
+.first_screen {
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 600px;
+    padding-top: 30px;
+    background-position-x: center;
+    background-position-y: center;
+    background-size: cover;
+    overflow: hidden;
+    background-image: url("../image/background.png");
+}
+
+.screen_header {
+    width: 100%;
+    height: 50px;
+    padding: 0 80px 0 80px;
+    border-bottom: 1px solid #cccccc;
+}
+
+.header_left {
+    height: 100%;
+}
+
+.logo {
+    float: left;
+    width: 200px;
+    height: 100%;
+    background: url("../image/logo.png") no-repeat left center;
+    background-size: contain;
+    /*background-color: #adadad;*/
+}
+
+.header_right {
+    padding: 10px 0 10px 0;
+    height: 100%;
+}
+
+.l_btn {
+    float: right;
+    width: 100px;
+    height: 30px;
+    color: #ffffff;
+    font-size: 10px;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 3px;
+    margin: 0 5px 0 5px;
+    padding-top: 6px;
+    text-align: center;
+}
+
+.l_btn:hover {
+    color: #000000;
+    background: #ffffff;
+}
+
+.middle_area {
+    width: 60%;
+    margin: 100px auto 0 auto;
+    height: 400px;
+/ / border: 1 px solid #ffffff;
+}
+
+.slogan_area {
+    width: 90%;
+    margin: auto;
+    height: 30%;
+/ / border: 1 px solid saddlebrown;
+}
+
+.slogan_area h1 {
+    color: #ffffff;
+    text-align: center;
+}
+
+.slogan_area h2 {
+    color: #ffffff;
+    text-align: center;
+}
+
+.search_area {
+    width: 90%;
+    height: 60%;
+    padding-top: 20px;
+    margin: 10px auto 10px auto;
+/ / border: 1 px solid saddlebrown;
+}
+
+.search_left {
+    height: 100%;
+    padding: 15px 0 0 0;
+/ / border: 1 px solid #5cb85c;
+}
+
+.search_right {
+    float: left;
+    height: 100%;
+    margin: 0 auto;
+    padding-top: 15px;
+/ / border: 1 px solid #5cb85c;
+}
+
+.search_slt {
+    float: left;
+    width: 20%;
+    height: 50px;
+    border: none;
+    padding: 1px 6px;
+    margin: 0 4px auto 0;
+    background: #ffffff;
+}
+
+.search_slt option {
+    height: 50px;
+}
+
+.search_input {
+    float: left;
+    width: 64%;
+    height: 50px;
+    border: none;
+    background: #ffffff;
+    padding: 15px 0 15px 5px;
+}
+
+.search_btn {
+    width: 15%;
+    height: 50px;
+    border: none;
+    padding: 1px 6px;
+    background: #4cae4c;
+}
+
+.search_tab {
+    float: left;
+    width: 100%;
+    padding: 0 1px 0 0;
+
+}
+
+.search_tab li {
+    position: relative;
+    height: 50px;
+    line-height: 45px;
+    font-size: 14px;
+    color: #ffffff;
+    text-align: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: color .5s;
+    list-style: none outside none;
+    border-right: 1px solid #9d9d9d;
+}
+
+.search_tab li.on {
+    border-bottom: 1px solid #9d9d9d;
+    border-right: none;
+    font-size: 22px;
+}
+
+.search_bottom_line hr {
+    width: 120%;
+    height: 1px;
+    border: none;
+    border-top: 1px solid #adadad;
+    margin: -10px 0 0 -10%;
+
+}
+
+.search_bottom_line span {
+    color: #ffffff;
+    position: relative;
+}
+
+.search_bottom_line h5 {
+    color: #ffffff;
+    position: relative;
+    left: 25px;
+    top: -22px;
+    margin: 0;
+}
+
+.second_screen {
+    width: 90%;
+    margin: 0 5% 0 5%;
+    height: 350px;
+    float: left;
+    position: relative;
+    top: 20px;
+    color: #5bc0de;
+    /*border: 1px solid #31b0d5;*/
+
+}
+
+.second_left {
+    height: 100%;
+    /*border: 1px solid #4cae4c;*/
+    text-align: center;
+    border-radius: 10px;
+    background-color: #ffffff;
+    /*box-shadow: 2px 2px 2px #888888;*/
+
+}
+
+.second_left img {
+    width: 150px;
+    height: 150px;
+    /*border: 1px solid #000000;*/
+    margin: 10px auto 0 auto;
+    /*background: #8a6d3b;*/
+}
+
+.second_right {
+    height: 100%;
+    /*border: 1px solid #4cae4c;*/
+    text-align: center;
+    border-radius: 10px;
+    background-color: #ffffff;
+    /*box-shadow: 2px 2px 2px #888888;*/
+}
+
+.second_right img {
+    width: 150px;
+    height: 150px;
+/ / border: 1 px solid #000000;
+    margin: 10px auto 0 auto;
+    /*background: #8a6d3b;*/
+}

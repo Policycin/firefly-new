@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>智慧文本处理系统</title>
+
+    <!-- Bootstrap -->
+    <link href="{{ url_for('static',filename='home/css/index.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static',filename='home/css/bootstrap.css') }}" rel="stylesheet">
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+    <script src="{{url_for('static',filename='home/js/html5shiv.min.js')}}"></script>
+    <script src="{{url_for('static',filename='home/js/respond.min.js')}}"></script>
+    <![endif]-->
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="{{ url_for('static',filename='home/js/jquery.min.js') }}"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="{{ url_for('static',filename='home/js/bootstrap.min.js') }}"></script>
+
+</head>
+<body>
+<div class="first_screen">
+    <div class="screen_header">
+        <div class="header_left col-md-2">
+            <a class="logo" href="{{ url_for('home.index') }}"></a>
+        </div>
+        <div class="header_right col-md-10">
+            <a class="l_btn" href="{{ url_for('home.logout') }}">退出登录</a>
+            <a class="l_btn" href="#">修改密码</a>
+        </div>
+    </div>
+    <div class="middle_area">
+        <div class="slogan_area">
+            <h1>萤火虫：捕捉线索微光</h1>
+            <h2>已上线全国10000+份正在执行的有效文件</h2>
+        </div>
+
+        <div class="search_area">
+            <div class="search_left col-md-2">
+                <ul class="search_tab">
+                    <li class="on" onclick="tabClick()">督办文件</li>
+                    <!--<li >关键词检索</li>-->
+                    <!--<li >语句检索</li>-->
+                </ul>
+            </div>
+            <div class="search_right col-md-10">
+                <form method="POST" id="form-data">
+                    <div id="tab_01">
+                        <select class="search_slt" id="Num" name="Num">
+                            {% for c in choices %}
+                                <option value='{{ c["_id"] }}'>{{ c["fileNo"] }}</option>
+                            {% endfor %}
+                        </select>
+                        {{ form.keyWord }}
+                        {{ form.submitBtn }}
+                        {{ form.csrf_token }}
+                    </div>
+                </form>
+                <div id="tab_02" hidden>
+                    <input type="text" class="search_input" name="search_input" placeholder="请输入要查询的关键字">
+                    <button type="button" class="search_btn" name="search_btn">开始检索</button>
+                </div>
+                <div id="tab_03" hidden>
+                    <select name="" class="search_slt" title="文号">
+                        <option>国发5号文</option>
+                        <option>国发9号文</option>
+                    </select>
+                    <input type="text" class="search_input" name="search_input" placeholder="请输入名字">
+                    <button type="button" class="search_btn" name="search_btn">开始检索</button>
+                </div>
+            </div>
+        </div>
+        <div class="search_bottom_line">
+            <span title="关于" class="glyphicon glyphicon-exclamation-sign"></span><h5>关于萤火虫平台数据来源的声明</h5>
+            <hr/>
+        </div>
+    </div>
+
+</div>
+<div class="second_screen">
+    <div class="col-md-1"></div>
+    <div class="col-md-4 second_left">
+        <a href="#"><img src="{{ url_for('static',filename='home/image/xzqh.png') }}"/></a>
+        <h2>行政区划政策库</h2>
+        <h3>全国正在执行的各行政区划出台政策</h3>
+    </div>
+    <div class="col-md-2"></div>
+    <div class="col-md-4 second_right">
+        <img src="{{ url_for('static',filename='home/image/bmzc.png') }}"/>
+        <h2>部门政策库</h2>
+        <h3>国务院各部门机构出台政策，按部门查看</h3>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+</body>
+</html>

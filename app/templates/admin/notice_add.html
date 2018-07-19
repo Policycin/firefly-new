@@ -1,0 +1,73 @@
+{% extends 'admin/admin.html' %}
+{% block content %}
+    <section class="content-header">
+        <h1>萤火虫：发现线索微光</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> 公告管理</a></li>
+            <li class="active">添加公告</li>
+        </ol>
+    </section>
+    <section class="content" id="showcontent">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">添加公告</h3>
+                    </div>
+                    {% for msg in get_flashed_messages(category_filter=['ok']) %}
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h4><i class="icon fa fa-check"></i> 添加成功</h4>
+                            公告添加成功！
+                        </div>
+                    {% endfor %}
+                    {% for msg in get_flashed_messages(category_filter=['err']) %}
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h4><i class="icon fa fa-ban"></i>添加失败</h4>
+                            公告发布失败！
+                        </div>
+                    {% endfor %}
+                    <form role="form" method="POST">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label for="input_name">{{ form.content.label }}</label>
+                                {#                                <input type="text" class="form-control" id="input_name" placeholder="请输入标签名称！">#}
+                                {{ form.content }}
+                                {% for err in form.content.errors %}
+                                    <div class="col-md-12">
+                                        <font style="color;red">{{ err }}</font>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                <label for="input_name">{{ form.activation.label }}</label>
+                                {#                                <input type="text" class="form-control" id="input_name" placeholder="请输入标签名称！">#}
+                                {{ form.activation }}
+                                {% for err in form.activation.errors %}
+                                    <div class="col-md-12">
+                                        <font style="color;red">{{ err }}</font>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            {#                            <button type="submit" class="btn btn-primary">添加</button>#}
+                            {{ form.submit }}
+                            {{ form.csrf_token }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block js %}
+
+    <script>
+        $(document).ready(function () {
+            $('#g-5').addClass('active')
+            $('#g-5-1').addClass('active')
+        });
+    </script>
+{% endblock %}

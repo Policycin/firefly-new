@@ -1,0 +1,27 @@
+body {
+    padding-top: 52px;
+    padding-bottom: 10px;
+    background-color: #adadad !important;
+}
+
+.search_input {
+    float: left;
+    width: 64%;
+    height: 50px;
+    /*border: none;*/
+    background: #ffffff;
+    padding: 15px 0 15px 5px;
+}
+
+.search_btn {
+    width: 15%;
+    height: 50px;
+    border: none;
+    padding: 1px 6px;
+    background: #4cae4c;
+}
+
+#based_depart > li {
+    border: 1px solid gray;
+    border-radius: 5px;
+}

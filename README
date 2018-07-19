@@ -1,0 +1,84 @@
+#FireFly
+##项目目录结构
+>app  项目主目录
+>>admin 后台   
+>>home 前台   
+>>static 资源目录   
+>>templates 页面静态模板  
+
+>config.py   配置文件   
+>manage.py   启动项目   
+>requirements.txt  环境依赖
+##数据库结构
+管理员表（Admin）
+
+|表字段|描述|
+|---|---|
+|id|默认id|
+|name|	姓名|
+|pwd	|密码|
+|is_super|	是否超级管理员|
+|role_id	|角色id|
+|addtime|添加时间|
+|adminname|	用户名|
+|pid	|外键id|
+
+用户表（User）
+
+|表字段|描述|
+|---|---|
+
+公告（Notice）
+
+|表字段|描述|
+|---|---|
+|1	|信息|
+|2	|是否有效|
+|3	|添加时间|
+|4	|操作人员|
+|5	||
+|6  ||	
+|7	||
+
+国发文（SourceFile）
+
+|表字段|描述|
+|---|---|
+|indexNum	|索引号|
+|fileType	|主题分类|
+|publisher	|发文机关|
+|createTime	|成文日期|
+|title	|标题|
+|fileNo	|发文字号|
+|publishDate	|发布日期|
+|addtime	|添加日期|
+|path	|路径|
+|content	|正文|
+|tag	|标签|
+|url	|原文链接|
+
+文件库（CmpFile）
+
+|表字段|描述|
+|---|---|
+|abolitionDate	|废止日期|
+|classfication	|分类|
+|fileCreateTime	|创建时间|
+|fileLocalUrl	|本地路径|
+|fileName	|文件名称|
+|fileNo	|发文字号|
+|fileWebsiteUrl	|原文链接|
+|fromDate	|生效日期|
+|indexNum	|索引号|
+|keyword	|关键词|
+|publishDate	|发布日期|
+|publisher	|发布机构|
+|publisherCityCode	|发布城市代码|
+|publisherCityName	|发布城市名称|
+|addtime	|添加时间|
+|tag	|标签|
+|content	|正文内容|
+
+
+
+江苏 浙江 广东 上海

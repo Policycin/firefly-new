@@ -1,0 +1,97 @@
+{% extends 'admin/admin.html' %}
+{% block css %}
+{% endblock %}
+{% block content %}
+    <section class="content-header">
+        <h1>萤火虫：发现线索微光</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> 相似度计算</a></li>
+            <li class="active">相似度计算</li>
+        </ol>
+    </section>
+    <section class="content" id="showcontent">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">相似度计算</h3>
+                    </div>
+                    <form role="form" method="" enctype="multipart/form-data" action="">
+                        <div class="box-body">
+                            <label for="input_star">国发文号</label>
+                            <select class="form-control" id="input_sourefileNo">
+                                {% for v in sourefile %}
+                                    <option value={{ v['fileNo'] }}>{{ v['fileNo'] }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-group">
+                                <label for="input_title">文件标题</label>
+                                <input type="text" class="form-control" id="input_title" placeholder="请输入文件标题！">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_title">发文文号</label>
+                                <input type="text" class="form-control" id="input_fileNo" placeholder="请输入发文文号！">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_title">城市名称</label>
+                                <input type="text" class="form-control" id="input_cityName" placeholder="请输入城市名称！">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_title">开始日期</label>
+                                <input type="text" class="form-control" id="input_release_time1" placeholder="请输入开始日期！">
+                            </div>
+                            <div class="form-group">
+                                <label for="input_title">结束日期</label>
+                                <input type="text" class="form-control" id="input_release_time2" placeholder="请输入结束日期！">
+                            </div>
+
+
+                        </div>
+                        <div class="box-footer">
+                            <a id="do_search" class="btn btn-primary">
+                                下一步
+                                {#                                <button type="" class="">下一步</button>#}
+                            </a>
+                            <button type="reset" class="btn btn-primary">重置</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $('#input_release_time1').datepicker({
+            autoclose: true,
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+        });
+        $('#input_release_time2').datepicker({
+            autoclose: true,
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+        });
+        $(document).ready(function () {
+            $('#g-6').addClass('active')
+            $('#g-6-1').addClass('active')
+
+        });
+        $("#do_search").click(function () {
+            var sourefileNo = $("#input_sourefileNo").val();
+            var fileNo = $("#input_fileNo").val();
+            var fileTitle = $("#input_title").val();
+            var fileCityName = $("#input_cityName").val();
+            var fileReleasetime1 = $("#input_release_time1").val();
+            var fileReleasetime2 = $("#input_release_time2").val();
+            location.href = "{{url_for('admin.bot_list',page=1)}}?sourefileNo=" + sourefileNo
+                + "&fileNo=" + fileNo
+                + "&fileTitle=" + fileTitle
+                + "&fileCityName=" + fileCityName
+                + "&fileReleasetime1=" + fileReleasetime1
+                + "&fileReleasetime2=" + fileReleasetime2
+        });
+    </script>
+{% endblock %}
