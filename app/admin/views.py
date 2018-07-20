@@ -207,9 +207,10 @@ def sourefile_add():
 @admin.route('/sourefile/list/')
 def sourefile_list(page=None):
     page = request.args.get("page")
-    page = int(page)
     if page == None:
         page = 1
+    page = int(page)
+
     # 跳转列表页
     per_page_count = 10
     sourefile = db.SoureFile.find().sort('_id', -1).limit(10).skip(per_page_count * (page - 1))
@@ -690,9 +691,9 @@ def bot_cal():
     db.statements.remove({})
     entities2Count = entities2.count()
     # print(entities2.count())
-    for x in range(entities2Count):
-        entitiesMap = entities2[x]
-        db.statements.insert_one(entitiesMap)
+    # for x in range(entities2Count):
+    # entitiesMap = entities2[x]
+    # db.statements.insert_one(entitiesMap)
 
     # 查询所有符合条件的对比文件entities
     sqlwhere2 = {}
@@ -767,7 +768,7 @@ def bot_cal():
                         xhs = 0.0
                     res = xhs * entities2[v]['weight'] * 1.0
                     # 阈值 float(entities2[v]['threshold']) * 0.01
-                    if (res > float(40) * 0.01):
+                    if (res > float(entities2[v]['threshold']) * 0.01):
                         if (res > value[q]):
                             value[q] = res
                             value['text'] = y
