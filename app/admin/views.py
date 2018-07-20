@@ -803,7 +803,8 @@ def bot_cal():
                 "publisherCityCode": entities[x]['publisherCityCode'],
                 "publisherCityName": entities[x]['publisherCityName'],
                 "fileWebsiteUrl": entities[x]['fileWebsiteUrl'],
-                'publisher': entities[x]['publisher']
+                "publisher": entities[x]['publisher'],
+                "threshold": entities2[v]['threshold'],
             }
             if (db.ConfidenceResult.find({"uid1": entities2[v]['uid'], "uid2": entities[x]['_id']}).count() > 0):
                 db.ConfidenceResult.update_one({"uid1": entities2[v]['uid'], "uid2": entities[x]['_id']},
