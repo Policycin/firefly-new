@@ -105,7 +105,7 @@ for v in data:
             'publishCityName': v['publisherCityName'],
         }
     )
-    espost = es.index(index="cmpfile", doc_type="file", body=esdata)
+    # espost = es.index(index="cmpfile", doc_type="file", body=esdata)
 
 # search_term="外资"
 # res = es.search(index="cmpfile", size=20, body={
@@ -116,3 +116,7 @@ for v in data:
 #     }
 # })
 # print(res)
+cmpcontent = db.ConfidenceResult.find()
+for v in cmpcontent:
+    cmpfile = db.CmpFile.find_one({"_id": ObjectId(v['uid2'])})
+    db.ConfidenceResult.update(v, {"$set": {"content": cmpfile['content']}})
