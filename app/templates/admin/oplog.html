@@ -1,0 +1,111 @@
+{% extends 'admin/admin.html' %}
+{% block content %}
+    <section class="content-header">
+        <h1>萤火虫：发现线索微光</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> 日志管理</a></li>
+            <li class="active">操作日志列表</li>
+        </ol>
+    </section>
+    <section class="content" id="showcontent">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h3 class="box-title">操作日志列表</h3>
+                        <div class="box-tools">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="table_search" class="form-control pull-right"
+                                       placeholder="请输入关键字...">
+
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive no-padding">
+                        {% for msg in get_flashed_messages(category_filter=['del']) %}
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-check"></i> 删除成功</h4>
+                                该日志删除成功
+                            </div>
+                        {% endfor %}
+                        <table class="table table-hover">
+                            <tbody>
+                            <tr>
+                                <th style="max-width: 450px">编号</th>
+                                <th style="min-width:90px">账号</th>
+                                <th style="min-width:90px">用户名称</th>
+                                <th style="min-width:90px">事项</th>
+                                <th style="min-width:90px">时间</th>
+                                <th style="min-width:110px">操作</th>
+                            </tr>
+                            {% for v in index_list %}
+                                <tr>
+                                    <td>{{ v[0] }}</td>
+                                    <td>{{ v[3] }}</td>
+                                    <td>{{ v[2] }}</td>
+                                    <td>{{ v[4] }}</td>
+                                    <td>{{ v[5] }}</td>
+                                    <td>
+                                        <a href="{{ url_for("admin.oplog_del",id=v[1]) }}"
+                                           class="label label-danger">删除</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <nav aria-label="Page navigation" class="pull-right">
+                        <ul class="pagination">
+                            {{ html|safe }}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ url_for('static',filename='js/echarts.min.js') }}"></script>
+    <script>
+        var myChart = echarts.init(document.getElementById('meminfo'));
+        option = {
+            backgroundColor: "white",
+            tooltip: {
+                formatter: "{a} <br/>{b} : {c}%"
+            },
+            toolbox: {
+                feature: {
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            series: [{
+                name: '内存使用率',
+                type: 'gauge',
+                detail: {
+                    formatter: '{value}%'
+                },
+                data: [{
+                    value: 50,
+                    name: '内存使用率'
+                }]
+            }]
+        };
+        setInterval(function () {
+            option.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+            myChart.setOption(option, true);
+        }, 2000);
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#g-7').addClass('active')
+            $('#g-7-1').addClass('active')
+        });
+    </script>
+{% endblock %}

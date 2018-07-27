@@ -116,7 +116,7 @@ for v in data:
 #     }
 # })
 # print(res)
-cmpcontent = db.ConfidenceResult.find()
-for v in cmpcontent:
-    cmpfile = db.CmpFile.find_one({"_id": ObjectId(v['uid2'])})
-    db.ConfidenceResult.update(v, {"$set": {"content": cmpfile['content']}})
+# cmpcontent = db.ConfidenceResult.find()
+# for v in cmpcontent:
+#     cmpfile = db.CmpFile.find_one({"_id": ObjectId(v['uid2'])})
+#     db.ConfidenceResult.update(v, {"$set": {"content": cmpfile['content']}})

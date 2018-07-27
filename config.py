@@ -14,7 +14,7 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     # MONGOIP = '192.168.253.6'
-    MONGOIP = 'localhost'
+    MONGOIP = '127.0.0.1'
     MONGOPORT = 27017
     MONGODBNAME = 'FireFly2'
 

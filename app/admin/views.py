@@ -2,7 +2,8 @@ from . import admin
 from .bot import bot
 from elasticsearch import Elasticsearch
 from flask import render_template, redirect, url_for, flash, session, request
-from .forms import LoginForm, TagForm, PwdForm, SoureFileForm, CmpFileForm, NoticeForm, SentenceForm
+from .forms import LoginForm, TagForm, PwdForm, SoureFileForm, CmpFileForm, NoticeForm, SentenceForm, AuthForm, \
+    RoleForm, AdminForm, UserForm
 from pymongo import MongoClient, DESCENDING
 from ..models import verify_password
 from flask_login import login_user, logout_user, login_required, current_user
@@ -54,9 +55,17 @@ def login():
     if form.validate_on_submit():
         data = form.data
         admin = db.Admin.find_one({"username": data['account']})
-        print(admin)
-        if admin is not None and verify_password(admin.get('password'), data['pwd']):
+        if admin is not None and verify_password(admin.get('pwd'), data['pwd']):
             session['admin'] = data['account']
+            session['username'] = admin['username']
+            session['name'] = admin['name']
+            oplog = {
+                "username": session['username'],
+                "name": session['name'],
+                "oplog": "登入系统",
+                "addtime": datetime.datetime.now()
+            }
+            db.Oplog.insert_one(oplog)
             return redirect(url_for('admin.index'))
         elif not verify_password(admin.get('password'), data['pwd']):
             flash("密码错误!", 'err')
@@ -66,7 +75,16 @@ def login():
 
 @admin.route('/logout/')
 def logout():
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "登出系统",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     session.pop('admin', None)
+    session.pop('name', None)
+    session.pop('username', None)
     # session.pop('admin_id', None)
     session.clear()
     return redirect(url_for('admin.login'))
@@ -75,6 +93,14 @@ def logout():
 @admin.route('/pwd/', methods=['GET', 'POST'])
 @admin_login_req
 def pwd():
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "修改密码",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = PwdForm()
     if form.validate_on_submit():
         data = form.data
@@ -92,6 +118,14 @@ def pwd():
 @admin.route('/tag/add/', methods=["GET", "POST"])
 @admin_login_req
 def tag_add():
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "添加标签",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = TagForm()
     if form.validate_on_submit():
         data = form.data
@@ -101,7 +135,7 @@ def tag_add():
             return redirect(url_for('admin.tag_add'))
         tag = {
             'name': data['name'].replace(" ", "").strip(),
-            'addtime': datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+            'addtime': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         db.Tag.insert(tag)
         flash("添加成功", 'ok')
@@ -121,6 +155,14 @@ def tag_add():
 @admin.route('/tag/list/', methods=["GET"])
 @admin_login_req
 def tag_list(page=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "查看标签列表",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     page = request.args.get("page")
     if page == None:
         page = 1
@@ -144,6 +186,14 @@ def tag_list(page=None):
 @admin.route('/tag/del/<id>/', methods=["GET"])
 @admin_login_req
 def tag_del(id=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "删除标签",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     db.Tag.remove({'_id': ObjectId(id)})
     flash("标签删除成功", 'del')
     return redirect(url_for('admin.tag_list'))
@@ -152,6 +202,14 @@ def tag_del(id=None):
 @admin.route('/tag/edit/<id>/', methods=["GET", "POST"])
 @admin_login_req
 def tag_edit(id=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "编辑标签",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = TagForm()
     tag = db.Tag.find_one({'_id': ObjectId(id)})
     if form.validate_on_submit():
@@ -169,7 +227,16 @@ def tag_edit(id=None):
 
 # 源文件管理
 @admin.route('/sourefile/add/', methods=['GET', 'POST'])
+@admin_login_req
 def sourefile_add():
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "源文件添加",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = SoureFileForm()
     if form.validate_on_submit():
         data = form.data
@@ -192,7 +259,7 @@ def sourefile_add():
             'title': data['title'].replace(" ", "").strip(),
             'fileNo': data['fileNo'].replace(" ", "").strip(),
             'publishDate': data['publishDate'].replace(" ", "").strip(),
-            'addtime': datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+            'addtime': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             # 'path':r"\\",
             'content': xxx.replace(" ", "").strip(),
             'tag': data['tag_id'].replace(" ", "").strip(),
@@ -205,7 +272,16 @@ def sourefile_add():
 
 
 @admin.route('/sourefile/list/')
+@admin_login_req
 def sourefile_list(page=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "查看源文件",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     page = request.args.get("page")
     if page == None:
         page = 1
@@ -233,14 +309,32 @@ def sourefile_list(page=None):
 
 
 @admin.route('/sourefile/del/<id>/', methods=['GET'])
+@admin_login_req
 def sourefile_del(id=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "源文件删除",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     db.SoureFile.remove({'_id': ObjectId(id)})
-    flash("标签删除成功", 'del')
+    flash("源文件删除成功", 'del')
     return redirect(url_for('admin.sourefile_list'))
 
 
 @admin.route('/sourefile/edit/<id>/', methods=['GET', 'POST'])
+@admin_login_req
 def sourefile_edit(id=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "源文件编辑",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = SoureFileForm()
     sourefile = db.SoureFile.find_one({'_id': ObjectId(id)})
     if request.method == 'GET':
@@ -264,7 +358,7 @@ def sourefile_edit(id=None):
             'title': data['title'].replace(" ", "").strip(),
             'fileNo': data['fileNo'].replace(" ", "").strip(),
             'publishDate': data['publishDate'].replace(" ", "").strip(),
-            'addtime': datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+            'addtime': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             # 'path':r"\\",
             'content': data['content'].replace(" ", "").strip(),
             'tag': data['tag_id'].replace(" ", "").strip(),
@@ -277,7 +371,16 @@ def sourefile_edit(id=None):
 
 
 @admin.route('/cmpfile/add/', methods=['GET', 'POST'])
+@admin_login_req
 def cmpfile_add():
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "添加对比文件",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = CmpFileForm()
     if form.validate_on_submit():
         data = form.data
@@ -321,7 +424,7 @@ def cmpfile_add():
             'fileName': data['fileName'].replace(" ", "").strip(),
             'fileNo': data['fileNo'].replace(" ", "").strip(),
             'publishDate': data['publishDate'],
-            'addtime': datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+            'addtime': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'content': xxx.replace(" ", "").strip(),
             'tag': data['tag_id'],
             'fileWebsiteUrl': data['fileWebsiteUrl'].replace(" ", "").strip(),
@@ -339,7 +442,16 @@ def cmpfile_add():
 
 
 @admin.route('/cmpfile/list/<int:page>')
+@admin_login_req
 def cmpfile_list(page=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "查看对比文件",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     per_page_count = 10
     page = request.args.get("page")
     if page == None:
@@ -366,14 +478,32 @@ def cmpfile_list(page=None):
 
 
 @admin.route('/cmpfile/del/<id>', methods=['GET'])
+@admin_login_req
 def cmpfile_del(id=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "删除对比文件",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     db.CmpFile.remove({'_id': ObjectId(id)})
-    flash("标签删除成功", 'del')
+    flash("对比文件删除成功", 'del')
     return redirect(url_for('admin.cmpfile_list', page=1))
 
 
 @admin.route('/cmpfile/edit/<id>', methods=['GET', 'POST'])
+@admin_login_req
 def cmpfile_edit(id=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "修改对比文件",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = CmpFileForm()
     cmpfile = db.CmpFile.find_one({'_id': ObjectId(id)})
     if request.method == 'GET':
@@ -397,7 +527,7 @@ def cmpfile_edit(id=None):
             'fileName': data['fileName'].replace(" ", "").strip(),
             'fileNo': data['fileNo'].replace(" ", "").strip(),
             'publishDate': data['publishDate'],
-            'addtime': datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+            'addtime': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'content': data['content'].replace(" ", "").strip(),
             'tag': data['tag_id'].replace(" ", "").strip(),
             'fileWebsiteUrl': data['fileWebsiteUrl'].replace(" ", "").strip(),
@@ -415,7 +545,16 @@ def cmpfile_edit(id=None):
 
 # 公告管理
 @admin.route('/notice/list/<int:page>')
+@admin_login_req
 def notice_list(page=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "查看公告列表",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     per_page_count = 10
     page = request.args.get("page")
     if page == None:
@@ -431,18 +570,28 @@ def notice_list(page=None):
     for v in notice:
         param.append([i, v["_id"], v["content"], v["activation"],
                       v["optuser"], v["addtime"]])
+        i+=1
     index_list = param[0:per_page_count + 1]
     return render_template("admin/notice_list.html", index_list=index_list, html=html)
 
 
 @admin.route('/notice/add/', methods=['GET', 'POST'])
+@admin_login_req
 def notice_add():
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "添加公告",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = NoticeForm()
     if form.validate_on_submit():
         data = form.data
         notice = {
             'content': data['content'].replace(" ", "").strip(),
-            'addtime': datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+            'addtime': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'optuser': session['admin'],
             'activation': data['activation']
         }
@@ -453,14 +602,32 @@ def notice_add():
 
 
 @admin.route('/notice/del/<id>', methods=['GET'])
+@admin_login_req
 def notice_del(id=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "删除公告",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     db.Notice.remove({"_id": ObjectId(id)})
     flash("公告删除成功", 'del')
     return redirect(url_for('admin.notice_list', page=1))
 
 
 @admin.route('/notice/edit/<id>', methods=['GET', 'POST'])
+@admin_login_req
 def notice_edit(id=None):
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "编辑公告",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
     form = NoticeForm()
     notice = db.Notice.find_one({"_id": ObjectId(id)})
     if request.method == 'GET':
@@ -480,13 +647,16 @@ def notice_edit(id=None):
 
 # 相似度计算
 @admin.route("/bot/search/")
+@admin_login_req
 def bot_search():
     sourefile = db.SoureFile.find().sort(" _id", -1)
     return render_template("admin/bot_search.html", sourefile=sourefile)
 
 
 @admin.route('/bot/list/<int:page>')
+@admin_login_req
 def bot_list(page=None):
+
     sourefileNo = request.args.get("sourefileNo")
     fileNo = request.args.get("fileNo")
     fileTitle = request.args.get("fileTitle")
@@ -588,7 +758,9 @@ def bot_list(page=None):
 
 
 @admin.route("/bot/alert/", methods=["GET", "POST"])
+@admin_login_req
 def bot_alert():
+
     sourefileNo = request.args.get("sourefileNo")
     fileNo = request.args.get("fileNo")
     fileTitle = request.args.get("fileTitle")
@@ -667,7 +839,17 @@ def bot_alert():
 
 
 @admin.route('/bot/cal/')
+@admin_login_req
 def bot_cal():
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "进行相似度计算",
+        "addtime": datetime.datetime.now()
+    }
+    db.Oplog.insert_one(oplog)
+
     # 接收查询条件
     sourefileNo = request.args.get("sourefileNo")
     fileNo = request.args.get("fileNo")
@@ -865,6 +1047,300 @@ def search():
     return render_template("admin/test2.html", res=res)
 
 
+@admin.route("/oblog/", methods=['GET', 'POST'])
+def oplog():
+    # 分页信息
+    per_page_count = 10
+    page = request.args.get("page")
+    if page is None:
+        page = 1
+    page = int(page)
+    data = db.Oplog.find().limit(per_page_count).skip(per_page_count * (page - 1))
+    count = data.count()
+    i = 1 + (page - 1) * per_page_count
+    paper_obj = Pagination(request.args.get("page", page), count, request.path, request.args,
+                           per_page_count=per_page_count)
+    html = paper_obj.page_html()
+    param = []
+    for v in data:
+        param.append([i, v["_id"], v["name"], v["username"], v["oplog"],
+                      v["addtime"]])
+        i += 1
+    index_list = param[0:per_page_count + 1]
+    return render_template("admin/oplog.html", index_list=index_list, html=html)
+
+
+@admin.route("/oblog/del/<id>/", methods=['GET'])
+def oplog_del(id=None):
+    db.Oplog.remove({"_id": ObjectId(id)})
+    flash("删除成功", 'del')
+    return redirect(url_for('admin.oplog'))
+
+
+@admin.route("/auth/list/")
+def auth_list():
+    # 操作日志
+    oplog = {
+        "username": session['username'],
+        "name": session['name'],
+        "oplog": "查看权限列表",
+        "addtime": datetime.datetime.now()
+    }
+    per_page_count = 10
+    page = request.args.get("page")
+    if page == None:
+        page = 1
+    page = int(page)
+    auth = db.Auth.find().sort('_id', -1).limit(per_page_count).skip(per_page_count * (page - 1))
+    count = auth.count()
+    paper_obj = Pagination(request.args.get("page", page), count, request.path, request.args,
+                           per_page_count=per_page_count)
+    html = paper_obj.page_html()
+    param = []
+    print(page)
+    i = (page - 1) * per_page_count + 1
+    for v in auth:
+        param.append([i, v["_id"], v["auth"], v["url"],
+                      v["addtime"]])
+        i += 1
+    index_list = param[0:per_page_count + 1]
+    return render_template("admin/auth_list.html", index_list=index_list, html=html)
+
+
+@admin.route("/auth/add/", methods=["GET", "POST"])
+def auth_add():
+    form = AuthForm()
+    if form.validate_on_submit():
+        data = form.data
+        auth = {
+            "auth": data["auth"],
+            "url": data["url"],
+            "addtime": datetime.datetime.now()
+        }
+        if db.Auth.find({"auth": data['auth']}).count() > 0:
+            flash("该权限已存在", "err")
+        elif db.Auth.find({"auth": data['url']}).count() > 0:
+            flash("该路径已存在", "err")
+        else:
+            db.Auth.insert_one(auth)
+            flash("添加成功", "ok")
+            return redirect(url_for("admin.auth_list"))
+    return render_template("admin/auth_add.html", form=form)
+
+
+@admin.route("/auth/edit/<id>", methods=["GET", "POST"])
+def auth_edit(id=None):
+    auth = db.Auth.find_one({"_id": ObjectId(id)})
+    form = AuthForm()
+    if form.validate_on_submit():
+        data = form.data
+        pc = db.Auth.find({"auth": data["auth"]})
+        if pc.count > 0 and pc["auth"] != data["auth"]:
+            flash("重复的权限名", "err")
+        elif pc.count > 0 and pc["url"] != data["url"]:
+            flash("重复的路径名", "err")
+        else:
+            tmp = {
+                "auth": data["auth"],
+                "url": data["url"],
+                "addtime": datetime.datetime.now()
+            }
+            db.Auth.update(auth, {"$set": tmp})
+            return redirect(url_for("admin.auth_list"))
+    return render_template("admin/auth_edit.html", form=form, auth=auth)
+
+
+@admin.route("/auth/del/<id>")
+def auth_del(id=None):
+    db.Auth.remove({"_id": ObjectId(id)})
+    flash("删除成功", "del")
+    return redirect(url_for("admin.auth_list"))
+
+
+# 角色管理
+@admin.route("/role/list/")
+def role_list():
+    per_page_count = 10
+    page = request.args.get("page")
+    if page == None:
+        page = 1
+    page = int(page)
+    role = db.Role.find().sort('_id', -1).limit(per_page_count).skip(per_page_count * (page - 1))
+    count = role.count()
+    paper_obj = Pagination(request.args.get("page", page), count, request.path, request.args,
+                           per_page_count=per_page_count)
+    html = paper_obj.page_html()
+    param = []
+    print(page)
+    i = (page - 1) * per_page_count + 1
+    for v in role:
+        param.append([i, v["_id"], v["name"],
+                      v["addtime"]])
+        i += 1
+    index_list = param[0:per_page_count + 1]
+    return render_template("admin/role_list.html", index_list=index_list, html=html)
+
+
+@admin.route("/role/add/", methods=["GET", "POST"])
+def role_add():
+    form = RoleForm()
+    print(form.data)
+    if form.validate_on_submit():
+        data = form.data
+        auth = {
+            "name": data["name"],
+            "auths": ",".join(map(lambda v: str(v), data["auths"])),
+            "addtime": datetime.datetime.now()
+        }
+        db.Role.insert_one(auth)
+        flash("添加角色成功！", "ok")
+    return render_template("admin/role_add.html", form=form)
+
+
+@admin.route("/role/edit/<id>", methods=["GET", "POST"])
+def role_edit(id=None):
+    form = RoleForm()
+    role = db.Role.find_one({"_id": ObjectId(id)})
+    if request.method == "GET":
+        auths = role["auths"]
+        form.auths.data = list(map(lambda v: str(v), auths.split(",")))
+    if form.validate_on_submit():
+        data = form.data
+        tmp = {
+            "name": data["name"],
+            "auths": ",".join(map(lambda v: str(v), data["auths"]))
+        }
+        db.Role.update(role, {"$set": tmp})
+        flash("角色编辑成功", 'ok')
+        return redirect(url_for("admin.role_list"))
+    return render_template("admin/role_edit.html", role=role, form=form)
+
+
+@admin.route("/role/del/<id>")
+def role_del(id=None):
+    db.Role.remove({"_id": ObjectId(id)})
+    flash("删除成功", 'del')
+    return redirect(url_for("admin.auth_list"))
+
+
+# 用户&管理员管理
+@admin.route("/admin/list/")
+def admin_list():
+    per_page_count = 10
+    page = request.args.get("page")
+    if page == None:
+        page = 1
+    page = int(page)
+    admin = db.Admin.find().sort('_id', -1).limit(per_page_count).skip(per_page_count * (page - 1))
+    count = admin.count()
+    paper_obj = Pagination(request.args.get("page", page), count, request.path, request.args,
+                           per_page_count=per_page_count)
+    html = paper_obj.page_html()
+    param = []
+    print(page)
+    i = (page - 1) * per_page_count + 1
+    for v in admin:
+        param.append([i, v["_id"], v["name"], v["username"],
+                      v["role"]])
+        i += 1
+    index_list = param[0:per_page_count + 1]
+    return render_template("admin/admin_list.html", index_list=index_list, html=html)
+
+
+@admin.route("/admin/add/", methods=["GET", "POST"])
+def admin_add():
+    form = AdminForm()
+    from werkzeug.security import generate_password_hash
+    if form.validate_on_submit():
+        data = form.data
+        tmp = {
+            "username": data["username"],
+            "pwd": generate_password_hash(data["pwd"]),
+            "name": data["name"],
+            "email": data["email"],
+            "role": data["role"],
+            "auths": db.Role.find_one({"name": data["role"]})["auths"]
+        }
+        db.Admin.insert_one(tmp)
+        flash("管理员添加成功", 'ok')
+        return redirect(url_for("admin.admin_list"))
+    return render_template("admin/admin_add.html", form=form)
+
+
+@admin.route("/admin/del/<id>")
+def admin_del(id=None):
+    db.Admin.remove({"_id": ObjectId(id)})
+    flash("删除成功", "del")
+    return redirect(url_for("admin.admin_list"))
+
+
+# @admin.route("/admin/edit/<id>",methods=["GET","POST"])
+# def admin_edit(id=None):
+#     form=AdminForm()
+#     if form.validate_on_submit():
+#         flash("修改成功","ok")
+#         return redirect(url_for("admin.admin_list"))
+#     return render_template("admin/admin_edit.html",form=form)
+
+# -------------------------------------------------------------------------------------------------------------------------------------
+
+@admin.route("/user/list/")
+def user_list():
+    per_page_count = 10
+    page = request.args.get("page")
+    if page == None:
+        page = 1
+    page = int(page)
+    user = db.User.find().sort('_id', -1).limit(per_page_count).skip(per_page_count * (page - 1))
+    count = user.count()
+    paper_obj = Pagination(request.args.get("page", page), count, request.path, request.args,
+                           per_page_count=per_page_count)
+    html = paper_obj.page_html()
+    param = []
+    print(page)
+    i = (page - 1) * per_page_count + 1
+    for v in user:
+        param.append([i, v["_id"], v["username"],
+                      v["addtime"]])
+        i += 1
+    index_list = param[0:per_page_count + 1]
+    return render_template("admin/user_list.html", index_list=index_list, html=html)
+
+
+@admin.route("/user/add/", methods=["GET", "POST"])
+def user_add():
+    form = UserForm()
+    from werkzeug.security import generate_password_hash
+    if form.validate_on_submit():
+        data = form.data
+        tmp = {
+            "username": data["username"],
+            "pwd": generate_password_hash(data["pwd"]),
+            "addtime": datetime.datetime.now()
+        }
+        db.User.insert_one(tmp)
+        flash("用户添加成功", "ok")
+        return redirect(url_for("admin.uesr_list"))
+    return render_template("admin/auser_add.html", form=form)
+
+
+@admin.route("/user/del/<id>")
+def user_del(id=None):
+    db.User.remove({"_id": ObjectId(id)})
+    flash("删除成功", "ok")
+    return redirect(url_for("admin.user_list"))
+
+
+# @admin.route("/user/edit/<id>",methods=["GET","POST"])
+# def user_edit(id=None):
+#     form=UserForm()
+#     if form.validate_on_submit():
+#         flash("修改成功","ok")
+#         return redirect(url_for("admin.user_list"))
+#     return render_template("admin/user_edit.html",form=form)
+
+
+
 class Pagination(object):
     """
     自定义分页
@@ -948,6 +1424,7 @@ class Pagination(object):
         # 上一页
         self.params["page"] = self.current_page - 1
         if self.params["page"] < 1:
+            self.params["page"] = self.current_page
             pervious_page = '<li class="disabled"><a href="%s?%s" aria-label="Previous">上一页</span></a></li>' % (
                 self.base_url, urlencode(self.params))
         else:

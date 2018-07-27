@@ -1,7 +1,7 @@
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TextAreaField, FileField, \
-    IntegerField
+    IntegerField, SelectMultipleField
 from flask_wtf import FlaskForm
-from wtforms.validators import Required, Length, Email, DataRequired, ValidationError
+from wtforms.validators import Required, Length, Email, DataRequired, ValidationError, EqualTo
 from pymongo import MongoClient
 from ..models import verify_password
 from app import app
@@ -518,6 +518,202 @@ class SentenceForm(FlaskForm):
             "class": "form-control", "placeholder": "请输入权重"
         }
     )
+    submit = SubmitField(
+        '保存',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+
+class AuthForm(FlaskForm):
+    auth = StringField(
+        label="权限",
+        validators=[
+            DataRequired("请输入权限名称！")
+        ],
+        description="权限",
+        render_kw={
+            "class": "form-control", "placeholder": "请输入名称"
+        }
+    )
+    url = StringField(
+        label="路径",
+        validators=[
+            DataRequired("请输入路径！")
+        ],
+        description="路径",
+        render_kw={
+            "class": "form-control", "placeholder": "请输入路径"
+        }
+    )
+    submit = SubmitField(
+        '保存',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+
+class RoleForm(FlaskForm):
+    name = StringField(
+        label="角色名称",
+        validators=[
+            DataRequired("请输入角色名称")
+        ],
+        description="角色名称",
+        render_kw={
+            "class": "form-control", "placeholder": "请输入角色名称"
+        }
+    )
+    auths = SelectMultipleField(
+        label="权限列表",
+        validators=[
+            DataRequired("权限列表不能为空！")
+        ],
+        # 动态数据填充选择栏：列表生成器
+        coerce=str,
+        choices=[(v["url"], v["auth"]) for v in db.Auth.find()],
+        description="权限列表",
+        render_kw={
+            "class": "form-control",
+        }
+    )
+    submit = SubmitField(
+        '保存',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+
+class AdminForm(FlaskForm):
+    name = StringField(
+        label="昵称",
+        validators=[
+            DataRequired("请输入昵称")
+        ],
+        description="昵称",
+        render_kw={
+            "class": "form-control", "placeholder": "请输入昵称"
+        }
+    )
+    username = StringField(
+        label="用户名",
+        validators=[
+            DataRequired("请输入用户名")
+        ],
+        description="用户名",
+        render_kw={
+            "class": "form-control", "placeholder": "请输入用户名"
+        }
+    )
+    pwd = PasswordField(
+        label='密码',
+        validators=[
+            DataRequired("请输入密码")
+        ],
+        description="密码",
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请输入密码',
+            'required': 'required'
+        }
+    )
+    repwd = PasswordField(
+        label='重复密码',
+        validators=[
+            DataRequired("请再次输入密码"),
+            EqualTo('pwd', message="两次密码不一致！")
+        ],
+        description="重复密码",
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请再次输入新密码',
+            'required': 'required'
+        }
+    )
+    role = SelectField(
+        label="管理员角色",
+        coerce=str,
+        choices=[(v["name"], v["name"]) for v in db.Role.find()],
+        render_kw={
+            'class': 'form-control'
+        }
+
+    )
+    email = StringField(
+        label="邮箱",
+        validators=[
+            DataRequired("邮箱不能为空！"),
+            Email("邮箱格式不正确！")
+        ],
+        description="邮箱",
+        render_kw={
+            "class": "form-control input-lg",
+            "placeholder": "请输入邮箱！",
+        }
+    )
+    submit = SubmitField(
+        '保存',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+
+class UserForm(FlaskForm):
+    # name=StringField(
+    #     lable="昵称",
+    #     validators=[
+    #         DataRequired("请输入昵称")
+    #     ],
+    #     description="昵称",
+    #     render_kw={
+    #         "class": "form-control", "placeholder": "请输入昵称"
+    #     }
+    # )
+    username = StringField(
+        lable="用户名",
+        validators=[
+            DataRequired("请输入用户名")
+        ],
+        description="用户名",
+        render_kw={
+            "class": "form-control", "placeholder": "请输入用户名"
+        }
+    )
+
+    def validate_username(self, field):
+        username = field.data
+        user = db.User.find_one().count()
+        if user == 1:
+            raise ValidationError("该用户名已存在")
+
+    # pwd = PasswordField(
+    #     label='密码',
+    #     validators=[
+    #         DataRequired("请输入密码")
+    #     ],
+    #     description="密码",
+    #     render_kw={
+    #         'class': 'form-control',
+    #         'placeholder': '请输入密码',
+    #         'required': 'required'
+    #     }
+    # )
+    # email = StringField(
+    #     label="邮箱",
+    #     validators=[
+    #         DataRequired("邮箱不能为空！"),
+    #         Email("邮箱格式不正确！")
+    #     ],
+    #     description="邮箱",
+    #     render_kw={
+    #         "class": "form-control input-lg",
+    #         "placeholder": "请输入邮箱！",
+    #     }
+    # )
     submit = SubmitField(
         '保存',
         render_kw={
